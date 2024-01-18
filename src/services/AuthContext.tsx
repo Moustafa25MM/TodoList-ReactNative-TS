@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, { createContext, useEffect, useState, ReactNode } from 'react';
 import { BASE_URL } from './config';
+import Toast from 'react-native-toast-message';
 
 type UserInfo = {
   access_token?: string;
@@ -44,30 +45,55 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUserInfo(userInfo);
         AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
         setIsLoading(false);
-        console.log(userInfo);
       })
-      .catch((e) => {
-        console.log(`register error ${e}`);
+      .catch((e: any) => {
+        if (e.response.status === 409) {
+          Toast.show({
+            type: 'error',
+            position: 'top',
+            text1: 'Register Error',
+            text2: 'Email is already Exist',
+            visibilityTime: 4000,
+          });
+        }
         setIsLoading(false);
       });
+    Toast.show({
+      type: 'success',
+      position: 'top',
+      text1: 'Registered Successfully',
+      visibilityTime: 4000,
+    });
   };
 
   const login = (email: string, password: string) => {
     setIsLoading(true);
 
     axios
-      .post(`${BASE_URL}/login`, { email, password })
+      .post(`${BASE_URL}/user/login`, { email, password })
       .then((res) => {
         let userInfo = res.data as UserInfo;
-        console.log(userInfo);
         setUserInfo(userInfo);
         AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
         setIsLoading(false);
       })
-      .catch((e) => {
-        console.log(`login error ${e}`);
+      .catch((e: any) => {
+        Toast.show({
+          type: 'error',
+          position: 'top',
+          text1: 'Login Error',
+          text2: 'Invalid Email or Password',
+          visibilityTime: 4000,
+        });
         setIsLoading(false);
+        throw e;
       });
+    Toast.show({
+      type: 'success',
+      position: 'top',
+      text1: 'Login Successfully',
+      visibilityTime: 4000,
+    });
   };
 
   const logout = () => {
