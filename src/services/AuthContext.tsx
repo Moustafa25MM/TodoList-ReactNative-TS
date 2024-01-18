@@ -4,8 +4,14 @@ import React, { createContext, useEffect, useState, ReactNode } from 'react';
 import { BASE_URL } from './config';
 import Toast from 'react-native-toast-message';
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+};
 type UserInfo = {
   access_token?: string;
+  user?: User;
 };
 
 interface AuthContextProps {
@@ -101,9 +107,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     axios
       .post(
-        `${BASE_URL}/logout`,
+        `${BASE_URL}/user/logout`,
         {},
-        { headers: { Authorization: `Bearer ${userInfo.access_token}` } }
+        { headers: { Authorization: `${userInfo.access_token}` } }
       )
       .then((res) => {
         console.log(res.data);
