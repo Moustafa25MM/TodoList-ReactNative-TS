@@ -36,15 +36,30 @@ interface RegisterScreenProps {
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const { isLoading, register } = useContext(AuthContext);
 
+  const handleRegistration = (values: {
+    name: string;
+    email: string;
+    password: string;
+  }) => {
+    const { name, email, password } = values;
+    register(name, email, password, () => {
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'Registered Successfully',
+        visibilityTime: 1000,
+      });
+      navigation.navigate('Login');
+    });
+  };
+
   return (
     <View style={styles.container}>
       <Spinner visible={isLoading} />
       <Formik
         initialValues={{ name: '', email: '', password: '' }}
         validationSchema={RegisterSchema}
-        onSubmit={(values) => {
-          register(values.name, values.email, values.password);
-        }}
+        onSubmit={handleRegistration}
       >
         {({
           handleChange,

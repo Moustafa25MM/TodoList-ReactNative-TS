@@ -28,17 +28,7 @@ const LoginSchema = Yup.object().shape({
 const LoginScreen: FC<Props> = ({ navigation }) => {
   const { isLoading, login } = useContext(AuthContext);
   const handleLogin = async (email: string, password: string) => {
-    try {
-      await login(email, password);
-    } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        position: 'top',
-        text1: 'Login Error',
-        text2: error.message,
-        visibilityTime: 4000,
-      });
-    }
+    await login(email, password);
   };
   return (
     <Formik
@@ -92,6 +82,7 @@ const LoginScreen: FC<Props> = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
+          <Toast />
         </View>
       )}
     </Formik>

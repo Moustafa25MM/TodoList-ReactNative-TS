@@ -7,12 +7,15 @@ import { TodoProvider } from '@/services/TodoContext';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <TodoProvider>
-        <StatusBar backgroundColor='#06bcee' />
-        <Navigation />
-      </TodoProvider>
+    <>
+      {' '}
       <Toast />
-    </AuthProvider>
+      <AuthProvider>
+        <TodoProvider>
+          <StatusBar backgroundColor='#06bcee' />
+          <Navigation />
+        </TodoProvider>
+      </AuthProvider>
+    </>
   );
 }

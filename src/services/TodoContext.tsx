@@ -114,7 +114,6 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
     return [];
   };
   const createTodo = async (name: string) => {
-    console.log('asd');
     if (!name.trim()) {
       Toast.show({
         type: 'error',
@@ -206,9 +205,9 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
       });
     }
   };
-  useEffect(() => {
-    fetchTodos();
-  }, []);
+  //   useEffect(() => {
+  //     fetchTodos();
+  //   }, []);
   return (
     <TodoContext.Provider
       value={{

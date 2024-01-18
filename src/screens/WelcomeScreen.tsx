@@ -1,5 +1,4 @@
 import SafeAreaWrapper from '@/components/shared/SafeAreaWrapper';
-import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Image, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -7,7 +6,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 const TodoImage =
   'https://res.cloudinary.com/das9oh9bs/image/upload/v1705509830/todo1_zskabc.jpg';
 
-// Update the navigation type based on your stack navigator configuration
 type WelcomeScreenNavigationProp = NativeStackNavigationProp<any, 'Welcome'>;
 
 interface WelcomeScreenProps {
@@ -15,10 +13,6 @@ interface WelcomeScreenProps {
 }
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
-  const navigateToSignInScreen = () => {
-    navigation.navigate('SignIn');
-  };
-
   const navigateToSignUpScreen = () => {
     navigation.navigate('Register');
   };
@@ -30,8 +24,8 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ navigation }) => {
           <Image
             source={{
               uri: TodoImage,
-              width: 120,
-              height: 120,
+              width: 320,
+              height: 320,
             }}
           />
         </View>

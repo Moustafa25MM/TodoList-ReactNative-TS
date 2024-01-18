@@ -18,7 +18,12 @@ interface AuthContextProps {
   isLoading: boolean;
   userInfo: UserInfo;
   splashLoading: boolean;
-  register: (name: string, email: string, password: string) => void;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    onRegistered: Function
+  ) => void;
   login: (email: string, password: string) => void;
   logout: () => void;
 }
@@ -41,16 +46,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [splashLoading, setSplashLoading] = useState<boolean>(false);
 
-  const register = (name: string, email: string, password: string) => {
+  const register = (
+    name: string,
+    email: string,
+    password: string,
+    onRegistered: Function
+  ) => {
     setIsLoading(true);
 
     axios
       .post(`${BASE_URL}/user/create`, { name, email, password })
-      .then((res) => {
+      .then(async (res) => {
         let userInfo = res.data as UserInfo;
         setUserInfo(userInfo);
-        AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
+        await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
         setIsLoading(false);
+        if (res.status === 201) {
+          await Toast.show({
+            type: 'success',
+            position: 'top',
+            text1: 'Registered Successfully',
+            visibilityTime: 1000,
+          });
+        }
+        onRegistered();
       })
       .catch((e: any) => {
         if (e.response.status === 409) {
@@ -61,15 +80,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             text2: 'Email is already Exist',
             visibilityTime: 4000,
           });
+        } else {
+          Toast.show({
+            type: 'error',
+            position: 'top',
+            text1: 'Register Error',
+            text2: 'An unknown error occurred',
+            visibilityTime: 4000,
+          });
         }
         setIsLoading(false);
       });
-    Toast.show({
-      type: 'success',
-      position: 'top',
-      text1: 'Registered Successfully',
-      visibilityTime: 4000,
-    });
   };
 
   const login = (email: string, password: string) => {
@@ -82,6 +103,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUserInfo(userInfo);
         AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
         setIsLoading(false);
+        Toast.show({
+          type: 'success',
+          position: 'top',
+          text1: 'Login Successfully',
+          visibilityTime: 4000,
+        });
       })
       .catch((e: any) => {
         Toast.show({
@@ -92,14 +119,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           visibilityTime: 4000,
         });
         setIsLoading(false);
-        throw e;
       });
-    Toast.show({
-      type: 'success',
-      position: 'top',
-      text1: 'Login Successfully',
-      visibilityTime: 4000,
-    });
   };
 
   const logout = () => {
