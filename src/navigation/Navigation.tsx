@@ -8,6 +8,7 @@ import { AuthContext } from '../services/AuthContext';
 import LoginScreen from '@/screens/LoginScreen';
 import HomeScreen from '@/screens/HomeScreen';
 import SplashScreen from '@/screens/SplashScreen';
+import WelcomeScreen from '@/screens/WelcomeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,11 @@ const Navigation = () => {
           <Stack.Screen name='Home' component={HomeScreen} />
         ) : (
           <>
+            <Stack.Screen
+              name='Welcome'
+              component={WelcomeScreen}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen
               name='Login'
               component={LoginScreen}
