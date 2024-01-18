@@ -7,6 +7,7 @@ import RegisterScreen from '../screens/RegisterScreen';
 import { AuthContext } from '../services/AuthContext';
 import LoginScreen from '@/screens/LoginScreen';
 import HomeScreen from '@/screens/HomeScreen';
+import SplashScreen from '@/screens/SplashScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,20 +17,28 @@ const Navigation = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <>
+        {splashLoading ? (
+          <Stack.Screen
+            name='Splash Screen'
+            component={SplashScreen}
+            options={{ headerShown: false }}
+          />
+        ) : userInfo.token ? (
           <Stack.Screen name='Home' component={HomeScreen} />
-
-          <Stack.Screen
-            name='Login'
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name='Register'
-            component={RegisterScreen}
-            options={{ headerShown: false }}
-          />
-        </>
+        ) : (
+          <>
+            <Stack.Screen
+              name='Login'
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='Register'
+              component={RegisterScreen}
+              options={{ headerShown: false }}
+            />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

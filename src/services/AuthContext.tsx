@@ -10,7 +10,7 @@ type User = {
   email: string;
 };
 type UserInfo = {
-  access_token?: string;
+  token?: string;
   user?: User;
 };
 
@@ -109,10 +109,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       .post(
         `${BASE_URL}/user/logout`,
         {},
-        { headers: { Authorization: `${userInfo.access_token}` } }
+        { headers: { Authorization: `${userInfo.token}` } }
       )
       .then((res) => {
-        console.log(res.data);
         AsyncStorage.removeItem('userInfo');
         setUserInfo({});
         setIsLoading(false);
