@@ -9,6 +9,7 @@ import LoginScreen from '@/screens/LoginScreen';
 import HomeScreen from '@/screens/HomeScreen';
 import SplashScreen from '@/screens/SplashScreen';
 import WelcomeScreen from '@/screens/WelcomeScreen';
+import TodoDetailsScreen from '@/components/TodoDetails/TodoDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,7 +26,10 @@ const Navigation = () => {
             options={{ headerShown: false }}
           />
         ) : userInfo.token ? (
-          <Stack.Screen name='Home' component={HomeScreen} />
+          <>
+            <Stack.Screen name='Home' component={HomeScreen} />
+            <Stack.Screen name='TodoDetails' component={TodoDetailsScreen} />
+          </>
         ) : (
           <>
             <Stack.Screen

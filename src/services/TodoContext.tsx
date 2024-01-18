@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-} from 'react';
+import React, { createContext, useState, ReactNode } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from './config';
@@ -22,10 +16,11 @@ type TodoContextState = {
   fetchTodos: () => Promise<Todo[]>;
   createTodo: (name: string) => void;
   toggleTodo: (id: string) => void;
-  updateTodo: (id: string, name: string, isCompleted: boolean) => void;
+  updateTodo: (id: string, name: string, isCompleted: boolean) => Promise<void>;
   deleteTodo: (id: string) => void;
   fetchCompletedTodos: () => Promise<Todo[]>;
   fetchInCompletedTodos: () => Promise<Todo[]>;
+  fetchTodo: (id: string) => Promise<void>;
 };
 
 export const TodoContext = createContext<TodoContextState>({
@@ -33,10 +28,11 @@ export const TodoContext = createContext<TodoContextState>({
   fetchTodos: () => Promise.resolve([]),
   createTodo: () => Promise.resolve(),
   toggleTodo: () => Promise.resolve(),
-  updateTodo: () => {},
+  updateTodo: () => Promise.resolve(),
   deleteTodo: () => {},
   fetchCompletedTodos: () => Promise.resolve([]),
   fetchInCompletedTodos: () => Promise.resolve([]),
+  fetchTodo: () => Promise.resolve(),
 });
 
 export const TodoProvider = ({ children }: { children: ReactNode }) => {
@@ -64,6 +60,50 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
       });
     }
     return [];
+  };
+  const fetchTodo = async (id: string) => {
+    try {
+      const todo = todos.find((t) => t._id === id);
+      if (todo) {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        if (userInfo) {
+          const { token } = JSON.parse(userInfo);
+          const response = await axios.get(`${BASE_URL}/todo/get/${id}`, {
+            headers: { Authorization: token },
+          });
+          setTodos(todos.map((t) => (t._id === id ? response.data : t)));
+        }
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'fetching Todo Failed',
+        text2: error.response.data.message || 'An error occurred',
+      });
+    }
+  };
+  const toggleTodo = async (id: string) => {
+    try {
+      const todo = todos.find((t) => t._id === id);
+      if (todo) {
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        if (userInfo) {
+          const { token } = JSON.parse(userInfo);
+          const response = await axios.put(
+            `${BASE_URL}/todo/toggle/${id}`,
+            { isCompleted: !todo.isCompleted },
+            { headers: { Authorization: token } }
+          );
+          setTodos(todos.map((t) => (t._id === id ? response.data : t)));
+        }
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Toggling Todo Failed',
+        text2: error.response.data.message || 'An error occurred',
+      });
+    }
   };
 
   const fetchCompletedTodos = async (): Promise<Todo[]> => {
@@ -116,7 +156,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
   const createTodo = async (name: string) => {
     if (!name.trim()) {
       Toast.show({
-        type: 'error',
+        type: 'info',
         text1: 'Todo cannot be empty',
       });
       return;
@@ -134,35 +174,14 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
         setTodos((prevTodos) => [...prevTodos, response.data]);
       }
     } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Adding Todo Failed',
-        text2: error.response.data.message || 'An error occurred',
-      });
-    }
-  };
-
-  const toggleTodo = async (id: string) => {
-    try {
-      const todo = todos.find((t) => t._id === id);
-      if (todo) {
-        const userInfo = await AsyncStorage.getItem('userInfo');
-        if (userInfo) {
-          const { token } = JSON.parse(userInfo);
-          const response = await axios.put(
-            `${BASE_URL}/todo/toggle/${id}`,
-            { isCompleted: !todo.isCompleted },
-            { headers: { Authorization: token } }
-          );
-          setTodos(todos.map((t) => (t._id === id ? response.data : t)));
-        }
+      if (error.response.status === 409) {
+        Toast.show({
+          type: 'info',
+          text1: 'Adding Todo Failed',
+          text2: 'You have that Todo Already',
+          visibilityTime: 3000,
+        });
       }
-    } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Toggling Todo Failed',
-        text2: error.response.data.message || 'An error occurred',
-      });
     }
   };
 
@@ -171,7 +190,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
       const userInfo = await AsyncStorage.getItem('userInfo');
       if (userInfo) {
         const { token } = JSON.parse(userInfo);
-        const response = await axios.patch(
+        const response = await axios.put(
           `${BASE_URL}/todo/update/${id}`,
           { name, isCompleted },
           { headers: { Authorization: token } }
@@ -179,11 +198,20 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
         setTodos(todos.map((t) => (t._id === id ? response.data : t)));
       }
     } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Updating Todo Failed',
-        text2: error.response.data.message || 'An error occurred',
-      });
+      if (error.response.status === 409) {
+        Toast.show({
+          type: 'info',
+          text1: 'Updating Todo Failed',
+          text2: 'You have Todo with that Name',
+          visibilityTime: 3000,
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Updating Todo Failed',
+          text2: 'An error occurred',
+        });
+      }
     }
   };
 
@@ -219,6 +247,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
         deleteTodo,
         fetchCompletedTodos,
         fetchInCompletedTodos,
+        fetchTodo,
       }}
     >
       {children}

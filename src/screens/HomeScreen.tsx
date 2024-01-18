@@ -13,6 +13,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { AuthContext } from '@/services/AuthContext';
 import { Todo, TodoContext } from '@/services/TodoContext';
 import TodoItem from '@/components/TodoItem/TodoItem';
+import Toast from 'react-native-toast-message';
 
 const HomeScreen = () => {
   const [newTodo, setNewTodo] = useState('');
@@ -20,14 +21,10 @@ const HomeScreen = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const { userInfo, isLoading, logout } = useContext(AuthContext);
-  const { createTodo, toggleTodo, deleteTodo, fetchTodos } =
+  const { createTodo, toggleTodo, deleteTodo, fetchTodos, updateTodo } =
     useContext(TodoContext);
 
   const handleAddTodo = async () => {
-    if (!newTodo.trim()) {
-      return;
-    }
-
     await createTodo(newTodo);
     setNewTodo('');
     fetchTodos();
@@ -65,17 +62,19 @@ const HomeScreen = () => {
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
       <View>
-        <View style={{ height: 100 }}></View>
         <View
           style={{
-            height: 200,
+            height: 220,
             width: 700,
             marginBottom: 20,
             justifyContent: 'space-between',
           }}
         >
-          <View>
+          <View style={styles.titleContainer}>
             <Text style={styles.title}>My Todo App </Text>
+            <Text style={styles.hintText}>
+              Tap on a task to view and edit details
+            </Text>
           </View>
           <View style={styles.inputContainer}>
             <TextInput
@@ -128,6 +127,7 @@ const HomeScreen = () => {
               todo={item}
               toggleTodo={toggleTodo}
               deleteTodo={deleteTodo}
+              updateTodo={updateTodo}
             />
           )}
           ListEmptyComponent={() => (
@@ -137,6 +137,7 @@ const HomeScreen = () => {
           )}
         />
       </View>
+      <Toast />
     </View>
   );
 };
@@ -156,6 +157,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignSelf: 'flex-start',
     marginLeft: 20,
+  },
+  titleContainer: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  hintText: {
+    color: '#FF6430',
+    fontSize: 14,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -212,21 +222,7 @@ const styles = StyleSheet.create({
   filterButtonSelected: {
     backgroundColor: '#06bcee',
   },
-  todoItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-    width: '100%',
-    backgroundColor: '#fff',
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
-    marginBottom: 5,
-  },
-  todoText: {
-    fontSize: 16,
-    color: '#333',
-  },
+
   todoCompleted: {
     textDecorationLine: 'line-through',
     color: '#aaa',

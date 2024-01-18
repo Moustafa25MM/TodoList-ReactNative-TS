@@ -8,11 +8,15 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+type TodoDetailsNavigationProp = NativeStackNavigationProp<any, 'TodoDetails'>;
 type TodoItemProps = {
   todo: Todo;
   toggleTodo: (id: string) => void;
   deleteTodo: (id: string) => void;
+  updateTodo: (id: string, name: string, isCompleted: boolean) => Promise<void>;
 };
 
 const TodoItem: React.FC<TodoItemProps> = ({
@@ -20,8 +24,13 @@ const TodoItem: React.FC<TodoItemProps> = ({
   toggleTodo,
   deleteTodo,
 }) => {
+  const navigation = useNavigation<TodoDetailsNavigationProp>();
+
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
+  const handlePress = () => {
+    navigation.navigate('TodoDetails', { id: todo._id });
+  };
   const handleDeleteTodo = () => {
     deleteTodo(todo._id);
     setDeleteModalVisible(false);
@@ -29,11 +38,13 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
   return (
     <View style={styles.todoItem}>
-      <Text
-        style={[styles.todoText, todo?.isCompleted && styles.todoCompleted]}
-      >
-        {todo?.name}
-      </Text>
+      <TouchableOpacity onPress={handlePress} style={{ flex: 1 }}>
+        <Text
+          style={[styles.todoText, todo?.isCompleted && styles.todoCompleted]}
+        >
+          {todo?.name}
+        </Text>
+      </TouchableOpacity>
       <View style={styles.actions}>
         <Button title='Toggle' onPress={() => toggleTodo(todo._id)} />
         <Button
