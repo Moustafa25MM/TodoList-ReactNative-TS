@@ -7,22 +7,12 @@ import {
   View,
   FlatList,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { AuthContext } from '@/services/AuthContext';
 import { Todo, TodoContext } from '@/services/TodoContext';
-
-const TodoItem = ({ todo, toggleTodo, deleteTodo }: any) => (
-  <View style={styles.todoItem}>
-    <Text style={[styles.todoText, todo?.isCompleted && styles.todoCompleted]}>
-      {todo?.name}
-    </Text>
-    <View style={styles.actions}>
-      <Button title='Toggle' onPress={() => toggleTodo(todo._id)} />
-      <Button title='Delete' onPress={() => deleteTodo(todo._id)} color='red' />
-    </View>
-  </View>
-);
+import TodoItem from '@/components/TodoItem/TodoItem';
 
 const HomeScreen = () => {
   const [newTodo, setNewTodo] = useState('');
