@@ -108,9 +108,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
   },
   wrapper: {
     width: '80%',
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
   input: {
     marginBottom: 12,
@@ -118,10 +127,14 @@ const styles = StyleSheet.create({
     borderColor: '#bbb',
     borderRadius: 5,
     paddingHorizontal: 14,
+    height: 40,
+    fontSize: 16,
   },
   link: {
     color: 'blue',
     marginTop: 20,
+    fontSize: 16,
+    textDecorationLine: 'underline',
   },
   errorText: {
     color: 'red',

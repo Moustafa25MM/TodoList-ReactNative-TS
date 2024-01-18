@@ -11,7 +11,6 @@ import {
 import Spinner from 'react-native-loading-spinner-overlay';
 import { AuthContext } from '@/services/AuthContext';
 import { Todo, TodoContext } from '@/services/TodoContext';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const TodoItem = ({ todo, toggleTodo, deleteTodo }: any) => (
   <View style={styles.todoItem}>
@@ -28,19 +27,11 @@ const TodoItem = ({ todo, toggleTodo, deleteTodo }: any) => (
 const HomeScreen = () => {
   const [newTodo, setNewTodo] = useState('');
   const [filter, setFilter] = useState('all');
-  const [completedTodos, setCompletedTodos] = useState<Todo[]>([]);
-  const [inCompletedTodos, setInCompletedTodos] = useState<Todo[]>([]);
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const { userInfo, isLoading, logout } = useContext(AuthContext);
-  const {
-    createTodo,
-    toggleTodo,
-    deleteTodo,
-    fetchTodos,
-    fetchCompletedTodos,
-    fetchInCompletedTodos,
-  } = useContext(TodoContext);
+  const { createTodo, toggleTodo, deleteTodo, fetchTodos } =
+    useContext(TodoContext);
 
   const handleAddTodo = async () => {
     if (!newTodo.trim()) {
