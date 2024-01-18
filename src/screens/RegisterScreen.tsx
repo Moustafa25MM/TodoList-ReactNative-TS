@@ -1,17 +1,32 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import {
   Button,
-  Text,
-  TextInput,
-  TouchableOpacity,
   View,
+  TextInput,
+  Text,
   StyleSheet,
+  TouchableOpacity,
+  GestureResponderEvent,
 } from 'react-native';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import Toast from 'react-native-toast-message';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { AuthContext } from '../services/AuthContext';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-// Define the navigation prop type, adjust based on your navigation setup
+const RegisterSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(5, 'Name must be at least 5 characters long.')
+    .required('Name is required'),
+  email: Yup.string()
+    .email('Invalid email address')
+    .required('Email is required'),
+  password: Yup.string()
+    .min(5, 'Password must be at least 5 characters long.')
+    .required('Password is required'),
+});
+
 type RegisterScreenNavigationProp = NativeStackNavigationProp<any, 'Register'>;
 
 interface RegisterScreenProps {
@@ -19,55 +34,71 @@ interface RegisterScreenProps {
 }
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
-  const [name, setName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-
   const { isLoading, register } = useContext(AuthContext);
 
   return (
     <View style={styles.container}>
       <Spinner visible={isLoading} />
-      <View style={styles.wrapper}>
-        <TextInput
-          style={styles.input}
-          value={name}
-          placeholder='Enter name'
-          onChangeText={(text) => setName(text)}
-        />
+      <Formik
+        initialValues={{ name: '', email: '', password: '' }}
+        validationSchema={RegisterSchema}
+        onSubmit={(values) => {
+          register(values.name, values.email, values.password);
+        }}
+      >
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
+          <View style={styles.wrapper}>
+            <TextInput
+              style={styles.input}
+              value={values.name}
+              placeholder='Enter name'
+              onChangeText={handleChange('name')}
+              onBlur={handleBlur('name')}
+            />
+            {touched.name && errors.name ? (
+              <Text style={styles.errorText}>{errors.name}</Text>
+            ) : null}
 
-        <TextInput
-          style={styles.input}
-          value={email}
-          placeholder='Enter email'
-          onChangeText={(text) => setEmail(text)}
-        />
+            <TextInput
+              style={styles.input}
+              value={values.email}
+              placeholder='Enter email'
+              onChangeText={handleChange('email')}
+              onBlur={handleBlur('email')}
+            />
+            {touched.name && errors.email ? (
+              <Text style={styles.errorText}>{errors.name}</Text>
+            ) : null}
 
-        <TextInput
-          style={styles.input}
-          value={password}
-          placeholder='Enter password'
-          onChangeText={(text) => setPassword(text)}
-          secureTextEntry
-        />
-
-        <Button
-          title='Register'
-          onPress={() => {
-            if (name && email && password) {
-              // Ensure non-null values before calling register
-              register(name, email, password);
-            }
-          }}
-        />
-
-        <View style={{ flexDirection: 'row', marginTop: 20 }}>
-          <Text>Already have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.link}>Login</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+            <TextInput
+              style={styles.input}
+              value={values.password}
+              placeholder='Enter password'
+              onChangeText={handleChange('password')}
+              onBlur={handleBlur('password')}
+              secureTextEntry
+            />
+            {touched.name && errors.password ? (
+              <Text style={styles.errorText}>{errors.name}</Text>
+            ) : null}
+            <Button
+              title='Register'
+              onPress={(event: GestureResponderEvent) => handleSubmit()}
+            />
+          </View>
+        )}
+      </Formik>
+      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.link}>Already have an account? Login</Text>
+      </TouchableOpacity>
+      <Toast />
     </View>
   );
 };
@@ -90,6 +121,14 @@ const styles = StyleSheet.create({
   },
   link: {
     color: 'blue',
+    marginTop: 20,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginTop: 5,
+    marginBottom: 20,
+    fontWeight: 'bold',
   },
 });
 
