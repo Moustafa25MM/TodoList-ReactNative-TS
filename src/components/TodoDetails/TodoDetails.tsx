@@ -14,7 +14,7 @@ const TodoDetailsScreen = ({ route, navigation }: any) => {
   const [todoName, setTodoName] = useState('');
   const [todoCompleted, setTodoCompleted] = useState(false);
 
-  const { updateTodo, todos, fetchTodo } = useContext(TodoContext);
+  const { updateTodo, todos, fetchTodo, fetchTodos } = useContext(TodoContext);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -37,6 +37,10 @@ const TodoDetailsScreen = ({ route, navigation }: any) => {
       return;
     }
     await updateTodo(id, todoName, todoCompleted);
+    console.log('object1');
+    if (route.params?.onGoBack) {
+      route.params.onGoBack();
+    }
     navigation.goBack();
   };
 

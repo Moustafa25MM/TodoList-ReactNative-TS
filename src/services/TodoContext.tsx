@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from './config';
@@ -39,9 +39,11 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const fetchTodos = async (): Promise<Todo[]> => {
+    console.log('object3');
     try {
       const userInfo = await AsyncStorage.getItem('userInfo');
       if (userInfo) {
+        console.log('4');
         const { token } = JSON.parse(userInfo);
         const response = await axios.get(`${BASE_URL}/todo/find/all`, {
           headers: { Authorization: token },
@@ -96,6 +98,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
           );
           setTodos(todos.map((t) => (t._id === id ? response.data : t)));
         }
+        fetchTodos();
       }
     } catch (error: any) {
       Toast.show({
@@ -195,7 +198,9 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
           { name, isCompleted },
           { headers: { Authorization: token } }
         );
-        setTodos(todos.map((t) => (t._id === id ? response.data : t)));
+        setTodos((currentTodos) =>
+          currentTodos.map((t) => (t._id === id ? response.data : t))
+        );
       }
     } catch (error: any) {
       if (error.response.status === 409) {
@@ -233,9 +238,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
       });
     }
   };
-  //   useEffect(() => {
-  //     fetchTodos();
-  //   }, []);
+
   return (
     <TodoContext.Provider
       value={{

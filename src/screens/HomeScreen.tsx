@@ -27,7 +27,8 @@ const HomeScreen = () => {
   const handleAddTodo = async () => {
     await createTodo(newTodo);
     setNewTodo('');
-    fetchTodos();
+    const fetchedTodos = await fetchTodos();
+    setTodos(fetchedTodos);
   };
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const HomeScreen = () => {
     };
 
     fetchData();
-  }, [todos]);
+  }, []);
 
   const filteredTodos = useMemo(() => {
     if (filter === 'completed') {
@@ -53,6 +54,36 @@ const HomeScreen = () => {
       return todos;
     }
   }, [todos, filter]);
+
+  const handleToggleTodo = async (id: string) => {
+    await toggleTodo(id);
+    const fetchedTodos = await fetchTodos();
+    setTodos(fetchedTodos);
+  };
+  const handleDeleteTodo = async (id: string) => {
+    await deleteTodo(id);
+    const fetchedTodos = await fetchTodos();
+    setTodos(fetchedTodos);
+  };
+
+  const refreshTodos = async () => {
+    const fetchedTodos = await fetchTodos();
+    setTodos(fetchedTodos);
+  };
+
+  const handleUpdateTodo = async (
+    id: string,
+    name: string,
+    isCompleted: boolean
+  ) => {
+    await updateTodo(id, name, isCompleted);
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo._id === id ? { ...todo, name, isCompleted } : todo
+      )
+    );
+    console.log('object');
+  };
 
   return (
     <View style={styles.container}>
@@ -125,9 +156,12 @@ const HomeScreen = () => {
           renderItem={({ item }) => (
             <TodoItem
               todo={item}
-              toggleTodo={toggleTodo}
-              deleteTodo={deleteTodo}
-              updateTodo={updateTodo}
+              toggleTodo={() => handleToggleTodo(item._id)}
+              deleteTodo={() => handleDeleteTodo(item._id)}
+              updateTodo={() =>
+                handleUpdateTodo(item._id, item.name, item.isCompleted)
+              }
+              refreshTodos={refreshTodos}
             />
           )}
           ListEmptyComponent={() => (

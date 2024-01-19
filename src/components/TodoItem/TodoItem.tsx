@@ -17,28 +17,33 @@ type TodoItemProps = {
   toggleTodo: (id: string) => void;
   deleteTodo: (id: string) => void;
   updateTodo: (id: string, name: string, isCompleted: boolean) => Promise<void>;
+  refreshTodos: () => void;
 };
 
 const TodoItem: React.FC<TodoItemProps> = ({
   todo,
   toggleTodo,
   deleteTodo,
+  refreshTodos,
 }) => {
   const navigation = useNavigation<TodoDetailsNavigationProp>();
 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const handlePress = () => {
-    navigation.navigate('TodoDetails', { id: todo._id });
+    navigation.navigate('TodoDetails', {
+      id: todo._id,
+      onGoBack: refreshTodos,
+    });
   };
-  const handleDeleteTodo = () => {
+  const handleDeleteTodo = async () => {
     deleteTodo(todo._id);
     setDeleteModalVisible(false);
   };
 
   return (
     <View style={styles.todoItem}>
-      <TouchableOpacity onPress={handlePress} style={{ flex: 1 }}>
+      <TouchableOpacity onPress={handlePress} style={styles.buttonStyle}>
         <Text
           style={[styles.todoText, todo?.isCompleted && styles.todoCompleted]}
         >
@@ -67,7 +72,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-evenly',
-                width: '100%', // Width should be 100% of the modalView
+                width: '100%',
               }}
             >
               <TouchableOpacity
@@ -112,6 +117,7 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
+    gap: 10,
   },
   centeredView: {
     flex: 1,
@@ -146,6 +152,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderRadius: 50,
+  },
+  buttonStyle: {
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    marginVertical: 8,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
   },
 });
 
