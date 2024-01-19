@@ -79,7 +79,7 @@ const HomeScreen = () => {
     await updateTodo(id, name, isCompleted);
     setTodos((prevTodos) =>
       prevTodos.map((todo) =>
-        todo._id === id ? { ...todo, name, isCompleted } : todo
+        todo.id === id ? { ...todo, name, isCompleted } : todo
       )
     );
     console.log('object');
@@ -152,14 +152,14 @@ const HomeScreen = () => {
         </View>
         <FlatList
           data={filteredTodos}
-          keyExtractor={(item: any) => item._id}
+          keyExtractor={(item: any) => item.id}
           renderItem={({ item }) => (
             <TodoItem
               todo={item}
-              toggleTodo={() => handleToggleTodo(item._id)}
-              deleteTodo={() => handleDeleteTodo(item._id)}
+              toggleTodo={() => handleToggleTodo(item.id)}
+              deleteTodo={() => handleDeleteTodo(item.id)}
               updateTodo={() =>
-                handleUpdateTodo(item._id, item.name, item.isCompleted)
+                handleUpdateTodo(item.id, item.name, item.isCompleted)
               }
               refreshTodos={refreshTodos}
             />

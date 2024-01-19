@@ -32,12 +32,12 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
   const handlePress = () => {
     navigation.navigate('TodoDetails', {
-      id: todo._id,
+      id: todo.id,
       onGoBack: refreshTodos,
     });
   };
   const handleDeleteTodo = async () => {
-    deleteTodo(todo._id);
+    deleteTodo(todo.id);
     setDeleteModalVisible(false);
   };
 
@@ -51,7 +51,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
         </Text>
       </TouchableOpacity>
       <View style={styles.actions}>
-        <Button title='Toggle' onPress={() => toggleTodo(todo._id)} />
+        <Button title='Toggle' onPress={() => toggleTodo(todo.id)} />
         <Button
           title='Delete'
           onPress={() => setDeleteModalVisible(true)}

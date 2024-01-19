@@ -5,7 +5,7 @@ import { BASE_URL } from './config';
 import Toast from 'react-native-toast-message';
 
 export type Todo = {
-  _id: string;
+  id: string;
   name: string;
   isCompleted: boolean;
   user: string;
@@ -65,7 +65,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
   };
   const fetchTodo = async (id: string) => {
     try {
-      const todo = todos.find((t) => t._id === id);
+      const todo = todos.find((t) => t.id === id);
       if (todo) {
         const userInfo = await AsyncStorage.getItem('userInfo');
         if (userInfo) {
@@ -73,7 +73,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
           const response = await axios.get(`${BASE_URL}/todo/get/${id}`, {
             headers: { Authorization: token },
           });
-          setTodos(todos.map((t) => (t._id === id ? response.data : t)));
+          setTodos(todos.map((t) => (t.id === id ? response.data : t)));
         }
       }
     } catch (error: any) {
@@ -86,7 +86,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
   };
   const toggleTodo = async (id: string) => {
     try {
-      const todo = todos.find((t) => t._id === id);
+      const todo = todos.find((t) => t.id === id);
       if (todo) {
         const userInfo = await AsyncStorage.getItem('userInfo');
         if (userInfo) {
@@ -96,7 +96,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
             { isCompleted: !todo.isCompleted },
             { headers: { Authorization: token } }
           );
-          setTodos(todos.map((t) => (t._id === id ? response.data : t)));
+          setTodos(todos.map((t) => (t.id === id ? response.data : t)));
         }
         fetchTodos();
       }
@@ -199,7 +199,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
           { headers: { Authorization: token } }
         );
         setTodos((currentTodos) =>
-          currentTodos.map((t) => (t._id === id ? response.data : t))
+          currentTodos.map((t) => (t.id === id ? response.data : t))
         );
       }
     } catch (error: any) {
@@ -228,7 +228,7 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
         await axios.delete(`${BASE_URL}/todo/delete/${id}`, {
           headers: { Authorization: token },
         });
-        setTodos(todos.filter((t) => t._id !== id));
+        setTodos(todos.filter((t) => t.id !== id));
       }
     } catch (error: any) {
       Toast.show({

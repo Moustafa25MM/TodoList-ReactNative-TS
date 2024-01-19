@@ -25,7 +25,7 @@ const TodoDetailsScreen = ({ route, navigation }: any) => {
   }, [id]);
 
   useEffect(() => {
-    const todo = todos.find((t) => t._id === id);
+    const todo = todos.find((t) => t.id === id);
     if (todo) {
       setTodoName(todo.name);
       setTodoCompleted(todo.isCompleted);
