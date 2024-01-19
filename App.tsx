@@ -8,7 +8,6 @@ import { TodoProvider } from '@/services/TodoContext';
 export default function App() {
   return (
     <>
-      {' '}
       <Toast />
       <AuthProvider>
         <TodoProvider>
