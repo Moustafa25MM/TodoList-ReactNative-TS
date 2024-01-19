@@ -39,11 +39,9 @@ export const TodoProvider = ({ children }: { children: ReactNode }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const fetchTodos = async (): Promise<Todo[]> => {
-    console.log('object3');
     try {
       const userInfo = await AsyncStorage.getItem('userInfo');
       if (userInfo) {
-        console.log('4');
         const { token } = JSON.parse(userInfo);
         const response = await axios.get(`${BASE_URL}/todo/find/all`, {
           headers: { Authorization: token },

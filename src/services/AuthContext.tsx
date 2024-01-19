@@ -137,7 +137,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsLoading(false);
       })
       .catch((e) => {
-        console.log(`logout error ${e}`);
         setIsLoading(false);
       });
   };
@@ -158,7 +157,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setSplashLoading(false);
     } catch (e) {
       setSplashLoading(false);
-      console.log(`is logged in error ${e}`);
     }
   };
 

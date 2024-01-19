@@ -82,7 +82,6 @@ const HomeScreen = () => {
         todo.id === id ? { ...todo, name, isCompleted } : todo
       )
     );
-    console.log('object');
   };
 
   return (

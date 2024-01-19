@@ -37,7 +37,6 @@ const TodoDetailsScreen = ({ route, navigation }: any) => {
       return;
     }
     await updateTodo(id, todoName, todoCompleted);
-    console.log('object1');
     if (route.params?.onGoBack) {
       route.params.onGoBack();
     }
